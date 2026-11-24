@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!--
+  Onboard (G1 PC2): G1 state bridge, robot_state_publisher and the lidar mount TF.
+  Publishes /joint_states, /imu/pelvis, /imu/torso, /odom, /remote_controller, /diagnostics,
+  /robot_description and the TF tree odom -> pelvis -> ... -> livox_frame.
+
+    ros2 launch g1_bringup robot.launch.xml
+-->
+<launch>
+  <!-- URDF in g1_description/urdf. Must match the robot's mode_machine (the bridge warns
+       otherwise). g1_29dof_rev_1_0 = mode_machine 5, reported by our G1 on 2026-11-24; it is
+       also right with the waist locked (mode 6), whose locked joints read 0. -->
+  <arg name="robot_model" default="g1_29dof_rev_1_0"
+       description="URDF name in g1_description/urdf"/>
+  <arg name="bridge_config" default="$(find-pkg-share g1_state_bridge)/config/state_bridge.yaml"
+       description="g1_state_bridge parameter file"/>
+  <arg name="tf_rate_hz" default="100.0"
+       description="Max rate of joint TF and odom -> pelvis TF [Hz]"/>
+  <arg name="joint_states_topic" default="/joint_states"
+       description="Input of robot_state_publisher"/>
+
+  <!-- mid360_link -> livox_frame [m, rad], calibrated on our G1 from floor planes vs IMU
+       gravity: Unitree's mid360_joint under-states the lidar pitch by ~9.4 deg (see g1_drs
+       README). All zero gives the plain Unitree URDF. -->
+  <arg name="publish_lidar_tf" default="true"/>
+  <arg name="lidar_parent_frame" default="mid360_link"/>
+  <arg name="lidar_frame" default="livox_frame"/>
+  <arg name="lidar_x" default="0.0"/>
+  <arg name="lidar_y" default="0.0"/>
+  <arg name="lidar_z" default="0.0"/>
+  <arg name="lidar_roll" default="0.0066"/>
+  <arg name="lidar_pitch" default="-0.1634"/>
+  <arg name="lidar_yaw" default="0.0"/>
+
+  <node pkg="g1_state_bridge" exec="g1_state_bridge" name="g1_state_bridge" output="screen">
+    <param from="$(var bridge_config)"/>
+    <param name="expected_robot_model" value="$(var robot_model)"/>
+    <param name="odom.tf_rate_hz" value="$(var tf_rate_hz)"/>
+  </node>
+
+  <node pkg="robot_state_publisher" exec="robot_state_publisher" name="robot_state_publisher"
+        output="screen">
+    <param name="robot_description" type="str"
+           value="$(command 'cat $(find-pkg-share g1_description)/urdf/$(var robot_model).urdf')"/>
+    <param name="publish_frequency" value="$(var tf_rate_hz)"/>
+    <remap from="joint_states" to="$(var joint_states_topic)"/>
+  </node>
+
+  <!-- x y z yaw pitch roll parent child: the only argument form Foxy supports -->
+  <node pkg="tf2_ros" exec="static_transform_publisher" name="lidar_static_tf" output="log"
+        if="$(var publish_lidar_tf)"
+        args="$(var lidar_x) $(var lidar_y) $(var lidar_z) $(var lidar_yaw) $(var lidar_pitch) $(var lidar_roll) $(var lidar_parent_frame) $(var lidar_frame)"/>
+</launch>

@@ -1,0 +1,39 @@
+# Parameters of g1_state_bridge (onboard G1 PC2). Topic and frame names match the bags written
+# by g1_drs's bag converter. An empty *_topic disables that input/output; *_rate_hz <= 0.0
+# keeps every message. Floats need a decimal point (0.0), or ROS 2 rejects them as integers.
+g1_state_bridge:
+  ros__parameters:
+    # source:  DDS writer timestamp = PC1's clock when PC1 published the sample (recommended)
+    # receive: this node's clock when the sample arrived
+    stamp_source: "source"
+    expected_robot_model: ""            # set by robot.launch.xml; warns if the robot differs
+
+    lowstate:                           # unitree_hg/LowState, ~1 kHz
+      topic: "/lowstate"
+      # joint_names: motor index -> URDF joint; defaults to the G1 29-DoF table (g1_model.hpp)
+      joint_states_topic: "/joint_states"     # sensor_msgs/JointState (q, dq, tau_est)
+      joint_states_rate_hz: 0.0
+      imu_topic: "/imu/pelvis"                # sensor_msgs/Imu
+      imu_frame_id: "imu_in_pelvis"
+      imu_rate_hz: 0.0
+      remote_topic: "/remote_controller"      # sensor_msgs/Joy, axes (lx, ly, rx, ry, l2)
+      remote_rate_hz: 50.0
+      diagnostics_topic: "/diagnostics"       # motor temperature, voltage, error flags
+      diagnostics_rate_hz: 10.0
+
+    secondary_imu:                      # unitree_hg/IMUState, ~1 kHz
+      topic: "/secondary_imu"
+      output_topic: "/imu/torso"
+      output_rate_hz: 0.0
+      frame_id: "imu_in_torso"
+
+    odom:                               # unitree_go/SportModeState (Unitree's odometer), 500 Hz
+      topic: "/odommodestate"
+      output_topic: "/odom"                   # nav_msgs/Odometry
+      output_rate_hz: 0.0
+      frame_id: "odom"
+      child_frame_id: "pelvis"
+      # Frame of SportModeState.velocity, not yet verified on the G1: "world" or "body"
+      velocity_frame: "world"
+      publish_tf: true                        # odom -> pelvis
+      tf_rate_hz: 100.0

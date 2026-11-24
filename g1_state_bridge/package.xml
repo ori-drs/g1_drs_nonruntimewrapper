@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>g1_state_bridge</name>
+  <version>0.1.0</version>
+  <description>
+    Onboard (G1 PC2) bridge from Unitree G1 state topics without usable stamps (/lowstate,
+    /secondary_imu, /odommodestate) to standard ROS 2 messages stamped with the DDS source
+    timestamp: joint states, IMUs, remote controller, diagnostics, odometry and odom TF.
+  </description>
+  <maintainer email="kebl8470@ox.ac.uk">ori</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>builtin_interfaces</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <!-- Unitree messages, from github.com/unitreerobotics/unitree_ros2 (cyclonedds_ws/src/unitree) -->
+  <depend>unitree_go</depend>
+  <depend>unitree_hg</depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>g1_description</name>
+  <version>0.1.0</version>
+  <description>
+    Unitree G1 URDFs and meshes from unitree_ros (robots/g1_description), with mesh paths
+    as package:// URIs so the model resolves on the robot and on remote RViz machines.
+  </description>
+  <maintainer email="kebl8470@ox.ac.uk">ori</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
