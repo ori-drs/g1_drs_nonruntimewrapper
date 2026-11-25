@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.16)
+project(g1_trajectory)
+
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+set(DEPENDENCIES rclcpp geometry_msgs nav_msgs std_srvs)
+foreach(dependency ${DEPENDENCIES})
+  find_package(${dependency} REQUIRED)
+endforeach()
+
+add_executable(odom_trajectory src/odom_trajectory_node.cpp)
+target_include_directories(odom_trajectory PRIVATE include)
+ament_target_dependencies(odom_trajectory ${DEPENDENCIES})
+install(TARGETS odom_trajectory DESTINATION lib/${PROJECT_NAME})
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_trajectory test/test_trajectory.cpp)
+  target_include_directories(test_trajectory PRIVATE include)
+  ament_target_dependencies(test_trajectory ${DEPENDENCIES})
+endif()
+
+ament_package()

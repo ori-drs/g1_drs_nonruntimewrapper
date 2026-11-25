@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!--
+  Onboard (G1 PC2): head RealSense D435i, through the standard realsense2_camera driver.
+  Publishes /camera/color/{image_raw,camera_info,metadata}, /camera/depth/{image_rect_raw,
+  camera_info,metadata}, /camera/extrinsics/depth_to_color and the camera frames on /tf_static,
+  and attaches camera_link to the robot at the URDF's d435_link.
+
+    ros2 launch g1_bringup camera.launch.xml
+    (or: ros2 launch g1_bringup robot.launch.xml camera:=true)
+
+  Checked on 2026-11-26 (driver 4.51.1, firmware 5.15.1.55):
+  - Colour and depth are hardware-synchronized: their stamps agree within 0.02 ms. Each image
+    keeps its own stamp (enable_sync false); with enable_sync true the driver gives both
+    images the stamp of the frameset instead.
+  - Stamps are the camera's frame timestamps mapped to PC2's clock (global time), so they share
+    the time base of the robot topics. The depth stamp is the end of the exposure, about half
+    the exposure time (6 ms indoors) after the middle; metadata.sensor_timestamp has the middle.
+  - The camera's IMU does not work on this Jetson ("Motion Module failure"), so it is off.
+  - The floor seen by the depth camera agrees with the pelvis IMU within 0.7 deg when
+    camera_link = d435_link, so the static TF below is the identity.
+-->
+<launch>
+  <!-- Leading underscore: keeps the serial number a string (driver convention) -->
+  <arg name="serial_no" default="_347622075822" description="Head camera serial number, '_' + serial"/>
+  <arg name="camera_name" default="camera" description="Namespace and frame prefix"/>
+  <arg name="depth_profile" default="848,480,30" description="Depth width,height,fps"/>
+  <arg name="color_profile" default="640,480,30" description="Colour width,height,fps"/>
+  <arg name="publish_camera_tf" default="true"
+       description="Attach camera_link to the robot (camera_parent_frame)"/>
+  <arg name="camera_parent_frame" default="d435_link"/>
+
+  <include file="$(find-pkg-share realsense2_camera)/launch/rs_launch.py">
+    <arg name="camera_name" value="$(var camera_name)"/>
+    <arg name="serial_no" value="$(var serial_no)"/>
+    <arg name="enable_depth" value="true"/>
+    <arg name="depth_module.profile" value="$(var depth_profile)"/>
+    <arg name="enable_color" value="true"/>
+    <arg name="rgb_camera.profile" value="$(var color_profile)"/>
+    <arg name="enable_sync" value="false"/>
+    <arg name="enable_infra1" value="false"/>
+    <arg name="enable_infra2" value="false"/>
+    <arg name="enable_gyro" value="false"/>
+    <arg name="enable_accel" value="false"/>
+    <arg name="align_depth.enable" value="false"/>
+    <arg name="pointcloud.enable" value="false"/>
+  </include>
+
+  <!-- x y z yaw pitch roll parent child: the only argument form Foxy supports -->
+  <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_static_tf" output="log"
+        if="$(var publish_camera_tf)"
+        args="0 0 0 0 0 0 $(var camera_parent_frame) $(var camera_name)_link"/>
+</launch>

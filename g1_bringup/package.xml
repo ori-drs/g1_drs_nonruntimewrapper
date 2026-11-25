@@ -4,8 +4,9 @@
   <name>g1_bringup</name>
   <version>0.1.0</version>
   <description>
-    Launch files for the Unitree G1: robot.launch.xml on PC2 (state bridge, robot_state_publisher,
-    lidar mount TF) and visualization.launch.xml on the operator laptop (RViz2).
+    Launch files for the Unitree G1: robot.launch.xml and camera.launch.xml on PC2 (state bridge,
+    robot_state_publisher, lidar and camera mount TF, RealSense), record_bag.py (dataset
+    recording on PC2) and visualization.launch.xml on the operator laptop (RViz2).
   </description>
   <maintainer email="kebl8470@ox.ac.uk">ori</maintainer>
   <license>BSD-3-Clause</license>
@@ -16,11 +17,17 @@
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>g1_description</exec_depend>
-  <!-- robot.launch.xml (PC2) only -->
+  <!-- robot.launch.xml, camera.launch.xml and record_bag.py (PC2) only -->
   <exec_depend>g1_state_bridge</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>realsense2_camera</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>ros2bag</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
   <!-- visualization.launch.xml (laptop) only -->
+  <exec_depend>g1_trajectory</exec_depend>
   <exec_depend>rviz2</exec_depend>
   <exec_depend>rviz_default_plugins</exec_depend>
   <exec_depend>rqt_tf_tree</exec_depend>

@@ -1,17 +1,27 @@
 <?xml version="1.0"?>
 <!--
-  Laptop: RViz2 (and optionally rqt_tf_tree) for the live G1.
-  The robot publishes TF and /robot_description (robot.launch.xml on PC2). This computer only
-  needs g1_description installed, so RViz can load the meshes.
+  Laptop: RViz2 for the live G1, in the odom frame: robot model, TF, lidar cloud, trajectory,
+  and the head camera's colour and depth images. Optionally rqt_tf_tree.
+  The robot publishes TF, /robot_description and the sensor topics (robot.launch.xml camera:=true
+  on PC2). This computer needs g1_description (meshes) and g1_trajectory: odom_trajectory turns
+  /odom into the trajectory /odom/trajectory here, so the path does not travel over the network.
 
     ros2 launch g1_bringup visualization.launch.xml
+    ros2 service call /odom_trajectory/reset std_srvs/srv/Empty      # clear the trajectory
 -->
 <launch>
   <arg name="rviz_config" default="$(find-pkg-share g1_bringup)/rviz/g1_live.rviz"/>
   <arg name="fixed_frame" default="odom"
        description="RViz fixed frame (odom, or pelvis for the body view)"/>
   <arg name="tf_tree_gui" default="false" description="Also open rqt_tf_tree"/>
+  <arg name="trajectory" default="true" description="Run odom_trajectory (/odom -> /odom/trajectory)"/>
+  <arg name="odom_topic" default="/odom"/>
 
+  <node pkg="g1_trajectory" exec="odom_trajectory" name="odom_trajectory" output="log"
+        if="$(var trajectory)">
+    <remap from="odom" to="$(var odom_topic)"/>
+    <remap from="trajectory" to="$(var odom_topic)/trajectory"/>
+  </node>
   <node pkg="rviz2" exec="rviz2" name="rviz2" output="log"
         args="-d $(var rviz_config) -f $(var fixed_frame)"/>
   <node pkg="rqt_tf_tree" exec="rqt_tf_tree" name="rqt_tf_tree" output="log"

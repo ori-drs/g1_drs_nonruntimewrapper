@@ -1,15 +1,13 @@
 Panels:
   - Class: rviz_common/Displays
     Name: Displays
-  - Class: rviz_common/Views
-    Name: Views
 Visualization Manager:
   Class: ""
   Displays:
     - Class: rviz_default_plugins/Grid
       Name: Grid
       Cell Size: 0.5
-      Plane Cell Count: 20
+      Plane Cell Count: 40
       Reference Frame: <Fixed Frame>
       Enabled: true
       Value: true
@@ -50,23 +48,49 @@ Visualization Manager:
       Use Fixed Frame: true
       Enabled: true
       Value: true
-    - Class: rviz_default_plugins/Odometry
-      Name: Odometry
+    - Class: rviz_default_plugins/Path
+      Name: Trajectory
       Topic:
-        Depth: 5
-        Durability Policy: Volatile
+        Depth: 1
+        Durability Policy: Transient Local
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /odom
-      Keep: 200
-      Position Tolerance: 0.05
-      Angle Tolerance: 0.1
-      Shape:
-        Value: Axes
-        Axes Length: 0.2
-        Axes Radius: 0.01
-      Covariance:
-        Value: false
+        Value: /odom/trajectory
+      Color: 255; 170; 0
+      Alpha: 1
+      Line Style: Billboards
+      Line Width: 0.03
+      Buffer Length: 1
+      Pose Style: None
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Enabled: true
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Name: Color image
+      Topic:
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /camera/color/image_raw
+      Normalize Range: true
+      Enabled: true
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Name: Depth image
+      Topic:
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /camera/depth/image_rect_raw
+      # 16UC1 in mm: black = 0 m (no depth), white = 4 m and beyond
+      Normalize Range: false
+      Min Value: 0
+      Max Value: 4000
       Enabled: true
       Value: true
   Enabled: true
@@ -91,7 +115,7 @@ Visualization Manager:
       Name: Current View
       Target Frame: pelvis
       Distance: 5.0
-      Pitch: 0.4
+      Pitch: 0.5
       Yaw: 3.6
       Focal Point:
         X: 0
@@ -103,8 +127,12 @@ Window Geometry:
   Width: 1600
   Height: 1000
   Hide Left Dock: false
-  Hide Right Dock: true
+  Hide Right Dock: false
   Displays:
     collapsed: false
-  Views:
-    collapsed: true
+  Color image:
+    collapsed: false
+  Depth image:
+    collapsed: false
+  # Displays on the left, colour and depth images stacked on the right
+  QMainWindow State: 000000ff00000000fd0000000200000000000000fa000003d7fc0200000001fb000000100044006900730070006c0061007900730100000011000003d70000001700ffffff00000001000001c2000003d7fc0200000002fb000000160043006f006c006f007200200069006d0061006700650100000011000001e90000001700fffffffb000000160044006500700074006800200069006d0061006700650100000200000001e80000001700ffffff00000378000003d700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000

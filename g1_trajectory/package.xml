@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>g1_trajectory</name>
+  <version>0.1.0</version>
+  <description>
+    Turns odometry (nav_msgs/Odometry) into a trajectory (nav_msgs/Path) for RViz.
+    Runs on the operator laptop (Humble) or on G1 PC2 (Foxy).
+  </description>
+  <maintainer email="kebl8470@ox.ac.uk">ori</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>std_srvs</depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

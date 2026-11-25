@@ -1,0 +1,34 @@
+# Topics recorded by record_bag.py, in groups. Kept identical in g1_drs_nonruntimewrapper
+# (g1_bringup/config/recording.yaml) and g1_drs (tools/recording/recording.yaml).
+# `rate` is the nominal rate [Hz]: the recorder's queue holds 2 s of it, and after recording
+# each topic is checked against it.
+# `latched: true` marks topics published once (transient local); the recorder picks them up on
+# its own and they get no rate check.
+groups:
+  state:      # g1_state_bridge (robot.launch.xml), stamped with PC1's clock
+    /joint_states: {rate: 1000}
+    /imu/pelvis: {rate: 1000}
+    /odom: {rate: 500}
+  lidar:      # Livox MID-360 through PC1
+    /utlidar/cloud_livox_mid360: {rate: 10}
+    /utlidar/imu_livox_mid360: {rate: 200}
+  camera:     # head RealSense D435i (camera.launch.xml)
+    /camera/color/image_raw: {rate: 30}
+    /camera/color/camera_info: {rate: 30}
+    /camera/color/metadata: {rate: 30}
+    /camera/depth/image_rect_raw: {rate: 30}
+    /camera/depth/camera_info: {rate: 30}
+    /camera/depth/metadata: {rate: 30}
+    /camera/extrinsics/depth_to_color: {latched: true}
+  static:     # static TF: camera frames, lidar and camera mounts, fixed robot links
+    /tf_static: {latched: true}
+    # /robot_description is saved as robot_description.urdf in the bag folder instead: replayed
+    # as a topic, it would replace the URDF of the replay tools.
+  torso_imu:  # optional
+    /imu/torso: {rate: 1000}
+  raw:        # optional: Unitree messages as published by PC1, for g1_drs's bag converter
+    /lowstate: {rate: 1000}
+    /secondary_imu: {rate: 1000}
+    /odommodestate: {rate: 500}
+
+default_groups: [state, lidar, camera, static]
